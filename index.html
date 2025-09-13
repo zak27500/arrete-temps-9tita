@@ -53,7 +53,8 @@
 
   video {
     display: block;
-    max-width: 100%;
+    max-width: 90%;
+    width: 400px; /* taille adaptée mobile / desktop */
     height: auto;
     margin: 15px auto 0;
     border-radius: 15px;
@@ -105,7 +106,7 @@
 
 <div id="videosContainer">
   <div id="pausedMessage">⏳ Le temps s'est arrêté pour toi 9tita... 💖</div>
-  <video id="player" muted controls></video>
+  <video id="player" muted controls playsinline webkit-playsinline></video>
 </div>
 
 <div id="loveMessage">
@@ -184,7 +185,7 @@
   const player = document.getElementById('player');
 
   // Playlist vidéos
-  const playlist = ["video1.mp4", "video2.mp4", "video3.mp4", "video4.mp4", "video5.mp4", "video6.mp4", "video7.mp4", "video8.mp4", "video9.mp4", "video10.mp4", "video11.mp4", "video12.mp4"];
+  const playlist = ["video1.mp4", "video2.mp4", "video3.mp4"];
   let currentIndex = 0;
 
   function playVideo(index) {
