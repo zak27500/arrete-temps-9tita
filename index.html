@@ -54,7 +54,7 @@
   video {
     display: block;
     max-width: 90%;
-    width: 400px; /* taille adaptée mobile / desktop */
+    width: 400px;
     height: auto;
     margin: 15px auto 0;
     border-radius: 15px;
@@ -185,17 +185,25 @@
   const player = document.getElementById('player');
 
   // Playlist vidéos
-  const playlist = ["video1.mp4", "video2.mp4", "video3.mp4", "video4.mp4", "video5.mp4", "video6.mp4", "video7.mp4", "video8.mp4", "video9.mp4", "video10.mp4", "video11.mp4", "video12.mp4"];
+  const playlist = ["video1.mp4","video2.mp4","video3.mp4"];
   let currentIndex = 0;
+
+  // Précharge la vidéo suivante
+  function preloadVideo(index) {
+    const nextIndex = (index + 1) % playlist.length;
+    const tempVideo = document.createElement('video');
+    tempVideo.src = playlist[nextIndex];
+  }
 
   function playVideo(index) {
     player.src = playlist[index];
-    player.play();
+    player.load();
+    player.play().catch(err => console.log("Autoplay bloqué : ", err));
+    preloadVideo(index);
   }
 
   player.addEventListener('ended', () => {
-    currentIndex++;
-    if (currentIndex >= playlist.length) currentIndex = 0;
+    currentIndex = (currentIndex + 1) % playlist.length;
     playVideo(currentIndex);
   });
 
