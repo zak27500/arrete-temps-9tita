@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrêter le temps</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    background: black;
+    color: white;
+  }
+
+  #timeDisplay {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9vw;
+    z-index: 10;
+    text-align: center;
+  }
+
+  .btn {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3vw 6vw;
+    font-size: 4vw;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.8);
+    z-index: 10;
+  }
+
+  #resumeButton { display: none; }
+
+  #videosContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 5;
+    text-align: center;
+  }
+
+  video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 15px auto 0;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+  }
+
+  #pausedMessage {
+    font-size: 5vw;
+    color: #ff69b4;
+    text-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+    animation: fadeIn 2s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  #loveMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5vw;
+    text-align: center;
+    color: pink;
+    opacity: 1;
+    z-index: 15;
+    transition: opacity 1s ease-in-out;
+    max-width: 90%;
+    line-height: 1.3;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div id="timeDisplay"></div>
+<button id="timeButton" class="btn">Arrêter le temps</button>
+<button id="resumeButton" class="btn">Reprendre le temps</button>
+
+<div id="videosContainer">
+  <div id="pausedMessage">⏳ Le temps s'est arrêté pour toi 9tita... 💖</div>
+  <video id="player" muted controls></video>
+</div>
+
+<div id="loveMessage">
+  Depuis que je t'ai rencontrée, le temps n'a plus de pouvoir sur moi.<br>
+  Chaque seconde à tes côtés est une éternité de bonheur.<br>
+  Je suis très chanceux de t'avoir, je veux être à tes côtés 9tita diali.<br>
+  Si le temps s'arrête, mon coeur continuera de battre pour toi 💖
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script>
+  // Fond étoiles & cœurs
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+
+  const stars = [];
+  const hearts = [];
+  const starCount = 100;
+  const heartCount = 20;
+
+  for (let i = 0; i < starCount; i++) {
+    stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 2, speed: Math.random() * 0.5 + 0.2 });
+  }
+  for (let i = 0; i < heartCount; i++) {
+    hearts.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 20 + 10, speed: Math.random() * 1 + 0.5 });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'white';
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+      s.y -= s.speed;
+      if (s.y < 0) s.y = canvas.height;
+    });
+
+    ctx.fillStyle = 'pink';
+    hearts.forEach(h => {
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, h.size/2, 0, Math.PI*2);
+      ctx.fill();
+      h.y -= h.speed;
+      if (h.y + h.size < 0) h.y = canvas.height + h.size;
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Horloge
+  const timeDisplay = document.getElementById('timeDisplay');
+  let stopped = false;
+  let stoppedTime = null;
+
+  function updateTime() {
+    if (!stopped) timeDisplay.textContent = new Date().toLocaleTimeString();
+    else if (stoppedTime) timeDisplay.textContent = stoppedTime.toLocaleTimeString();
+  }
+  setInterval(updateTime, 1000);
+
+  // Audio
+  const sound = new Howl({ src: ['musique_eco.mp3'], autoplay: false, loop: true, volume: 0.7 });
+
+  const timeButton = document.getElementById('timeButton');
+  const resumeButton = document.getElementById('resumeButton');
+  const videosContainer = document.getElementById('videosContainer');
+  const loveMessage = document.getElementById('loveMessage');
+  const player = document.getElementById('player');
+
+  // Playlist vidéos
+  const playlist = ["video1.mp4", "video2.mp4", "video3.mp4", "video4.mp4", "video5.mp4", "video6.mp4", "video7.mp4", "video8.mp4", "video9.mp4", "video10.mp4", "video11.mp4", "video12.mp4"];
+  let currentIndex = 0;
+
+  function playVideo(index) {
+    player.src = playlist[index];
+    player.play();
+  }
+
+  player.addEventListener('ended', () => {
+    currentIndex++;
+    if (currentIndex >= playlist.length) currentIndex = 0;
+    playVideo(currentIndex);
+  });
+
+  function showMessage() { loveMessage.style.opacity = 1; }
+  function hideMessage() { loveMessage.style.opacity = 0; }
+
+  showMessage();
+
+  timeButton.addEventListener('click', () => {
+    stopped = true;
+    stoppedTime = new Date();
+    videosContainer.style.display = 'block';
+    currentIndex = 0;
+    playVideo(currentIndex);
+    sound.play();
+    hideMessage();
+    timeButton.style.display = 'none';
+    resumeButton.style.display = 'inline-block';
+  });
+
+  resumeButton.addEventListener('click', () => {
+    stopped = false;
+    videosContainer.style.display = 'none';
+    player.pause();
+    sound.stop();
+    showMessage();
+    resumeButton.style.display = 'none';
+    timeButton.style.display = 'inline-block';
+  });
+
+  window.addEventListener('resize', resizeCanvas);
+</script>
+
+</body>
+</html>
